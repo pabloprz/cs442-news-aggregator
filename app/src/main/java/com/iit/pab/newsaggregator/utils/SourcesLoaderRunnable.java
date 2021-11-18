@@ -84,8 +84,8 @@ public class SourcesLoaderRunnable implements Runnable {
                     String language = s.getString("language");
                     String category = s.getString("category");
                     String country = s.getString("country");
-                    SourceDTO dto = new SourceDTO(s.getString("id"), s.getString("name"),
-                            language, category, country);
+                    SourceDTO dto = new SourceDTO(s.getString("id"), s.getString("name"), category,
+                            language, country);
                     languages.add(language);
                     categories.add(category);
                     countries.add(country);

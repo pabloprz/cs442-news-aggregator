@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NewsAggregator</string>
+    <string name="app_name">News Gateway</string>
     <string name="no_connection">No internet connection</string>
     <string name="topics">Topics</string>
     <string name="languages">Languages</string>
