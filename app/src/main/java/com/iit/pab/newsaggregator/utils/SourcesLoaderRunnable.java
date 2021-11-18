@@ -72,7 +72,7 @@ public class SourcesLoaderRunnable implements Runnable {
                 sb.append(line).append('\n');
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            mainActivity.runOnUiThread(mainActivity::updatingSourcesFailed);
         }
 
         handleResults(sb.toString());
@@ -102,16 +102,19 @@ public class SourcesLoaderRunnable implements Runnable {
                 }
 
                 languagesList.clear();
-                languagesList.addAll(languages);
+                languages.stream().sorted().forEach(languagesList::add);
                 categoriesList.clear();
-                categoriesList.addAll(categories);
+                categories.stream().sorted().forEach(categoriesList::add);
                 countriesList.clear();
-                countriesList.addAll(countries);
+                countries.stream().sorted().forEach(countriesList::add);
+
+                mainActivity.runOnUiThread(mainActivity::updatingSourcesSuccess);
             } catch (JSONException e) {
                 e.printStackTrace();
+                mainActivity.runOnUiThread(mainActivity::updatingSourcesFailed);
             }
         } else {
-            //
+            mainActivity.runOnUiThread(mainActivity::updatingSourcesFailed);
         }
     }
 }
