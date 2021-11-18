@@ -1,6 +1,6 @@
 package com.iit.pab.newsaggregator.dto;
 
-public class LanguageDTO {
+public class LanguageDTO implements Comparable<LanguageDTO> {
 
     String code;
     String name;
@@ -24,5 +24,10 @@ public class LanguageDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public int compareTo(LanguageDTO languageDTO) {
+        return this.getName().compareTo(languageDTO.getName());
     }
 }

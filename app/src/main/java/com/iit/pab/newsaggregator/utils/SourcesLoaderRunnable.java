@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,21 +24,11 @@ import javax.net.ssl.HttpsURLConnection;
 public class SourcesLoaderRunnable implements Runnable {
 
     private final MainActivity mainActivity;
-    private final List<SourceDTO> sources;
-    private final List<String> categoriesList;
-    private final List<String> languagesList;
-    private final List<String> countriesList;
     private static final String DATA_URL = "https://newsapi.org/v2/sources";
     private static final String API_KEY = "284d18a74ba74f28bea570f2a5c05e66";
 
-    public SourcesLoaderRunnable(MainActivity mainActivity, List<SourceDTO> sources,
-                                 List<String> categoriesList, List<String> languagesList,
-                                 List<String> countriesList) {
+    public SourcesLoaderRunnable(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
-        this.sources = sources;
-        this.categoriesList = categoriesList;
-        this.languagesList = languagesList;
-        this.countriesList = countriesList;
     }
 
     @Override
@@ -82,8 +73,8 @@ public class SourcesLoaderRunnable implements Runnable {
         if (json != null) {
             try {
                 JSONObject jObjMain = new JSONObject(json);
-                sources.clear();
                 JSONArray sourceList = jObjMain.getJSONArray("sources");
+                List<SourceDTO> sources = new ArrayList<>();
                 Set<String> languages = new HashSet<>();
                 Set<String> categories = new HashSet<>();
                 Set<String> countries = new HashSet<>();
@@ -101,14 +92,8 @@ public class SourcesLoaderRunnable implements Runnable {
                     sources.add(dto);
                 }
 
-                languagesList.clear();
-                languages.stream().sorted().forEach(languagesList::add);
-                categoriesList.clear();
-                categories.stream().sorted().forEach(categoriesList::add);
-                countriesList.clear();
-                countries.stream().sorted().forEach(countriesList::add);
-
-                mainActivity.runOnUiThread(mainActivity::updatingSourcesSuccess);
+                mainActivity.runOnUiThread(() -> mainActivity.updatingSourcesSuccess(sources,
+                        languages, categories, countries));
             } catch (JSONException e) {
                 e.printStackTrace();
                 mainActivity.runOnUiThread(mainActivity::updatingSourcesFailed);
