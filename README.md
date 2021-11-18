@@ -1,1 +1,1 @@
-"# cs442 news-aggregator" 
+# cs442 news-aggregator
