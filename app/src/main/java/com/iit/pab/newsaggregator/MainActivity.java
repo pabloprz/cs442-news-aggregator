@@ -9,8 +9,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.iit.pab.newsaggregator.dto.CountryDTO;
 import com.iit.pab.newsaggregator.dto.SourceDTO;
 import com.iit.pab.newsaggregator.utils.ConnectionUtils;
+import com.iit.pab.newsaggregator.utils.CountriesNamesLoader;
 import com.iit.pab.newsaggregator.utils.SourcesLoaderRunnable;
 
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private List<String> languages = new ArrayList<>();
     private List<String> categories = new ArrayList<>();
     private List<String> countries = new ArrayList<>();
+    private List<CountryDTO> fullCountries = new ArrayList<>();
 
     private static final int CATEGORIES_ID = 0;
     private static final int LANGUAGES_ID = 1;
@@ -33,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loadSources();
+        loadData();
     }
 
     @Override
@@ -65,7 +68,13 @@ public class MainActivity extends AppCompatActivity {
         // TODO do something
     }
 
-    private void loadSources() {
+    public void receiveFullCountries(List<CountryDTO> countries) {
+        this.fullCountries = countries;
+    }
+
+    private void loadData() {
+        new Thread(new CountriesNamesLoader(this)).start();
+
         if (ConnectionUtils.hasNetworkConnection(this)) {
             new Thread(new SourcesLoaderRunnable(this, sources, categories, languages, countries)).start();
         } else {
