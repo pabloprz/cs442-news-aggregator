@@ -83,9 +83,11 @@ public class ArticlesLoaderRunnable implements Runnable {
                     String publishedAtStr = a.has("publishedAt") && !a.isNull("publishedAt") ? a
                             .getString("publishedAt") : null;
 
-                    ArticleDTO article = new ArticleDTO(a.getString("author"), a.getString("title"),
-                            a.getString("description"), a.getString("url"),
-                            a.getString("urlToImage"), DateTimeUtils.parseDate(publishedAtStr));
+                    ArticleDTO article =
+                            new ArticleDTO(getStringField(a, "author"), getStringField(a, "title"),
+                                    getStringField(a, "description"), getStringField(a, "url"),
+                                    getStringField(a, "urlToImage"),
+                                    DateTimeUtils.parseDate(publishedAtStr));
                     articles.add(article);
                 }
 
@@ -97,5 +99,9 @@ public class ArticlesLoaderRunnable implements Runnable {
         } else {
             mainActivity.runOnUiThread(mainActivity::fetchingArticlesFailed);
         }
+    }
+
+    private String getStringField(JSONObject obj, String field) throws JSONException {
+        return obj.has(field) && !obj.isNull(field) ? obj.getString(field) : null;
     }
 }

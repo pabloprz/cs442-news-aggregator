@@ -3,11 +3,11 @@ package com.iit.pab.newsaggregator.utils;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.Locale;
 
 public class DateTimeUtils {
 
     public static LocalDateTime parseDate(String date) {
-
         if (date != null) {
             DateTimeFormatter formatter = new DateTimeFormatterBuilder()
                     // date/time
@@ -24,5 +24,11 @@ public class DateTimeUtils {
         }
 
         return null;
+    }
+
+    public static String formatDateTime(LocalDateTime ldt) {
+        DateTimeFormatter dtf =
+                DateTimeFormatter.ofPattern("MMM dd, yyyy h:mm", Locale.getDefault());
+        return ldt.format(dtf);
     }
 }

@@ -1,8 +1,9 @@
 package com.iit.pab.newsaggregator.dto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class ArticleDTO {
+public class ArticleDTO implements Serializable {
 
     private String author;
     private String title;

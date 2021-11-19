@@ -1,5 +1,6 @@
 package com.iit.pab.newsaggregator;
 
+import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,6 +16,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.iit.pab.newsaggregator.dto.ArticleDTO;
 import com.iit.pab.newsaggregator.dto.CountryDTO;
@@ -41,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private ListView drawerList;
     private ActionBarDrawerToggle drawerToggle;
     private ArrayAdapter<String> drawerAdapter;
+    private ArticleAdapter articleAdapter;
+    private ViewPager2 viewPager;
 
     private List<SourceDTO> sources = new ArrayList<>();
     private List<SourceDTO> filteredSources = new ArrayList<>();
@@ -70,6 +74,10 @@ public class MainActivity extends AppCompatActivity {
         drawerList.setOnItemClickListener((parent, view, position, id) -> topicSelected(position));
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer,
                 R.string.close_drawer);
+
+        articleAdapter = new ArticleAdapter(this, articles);
+        viewPager = findViewById(R.id.viewPager);
+        viewPager.setAdapter(articleAdapter);
 
         loadData();
     }
@@ -140,8 +148,21 @@ public class MainActivity extends AppCompatActivity {
         filterSources();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void fetchingArticlesSuccess(List<ArticleDTO> articles) {
-        this.articles = articles;
+        this.articles.clear();
+        this.articles.addAll(articles);
+        articleAdapter.notifyDataSetChanged();
+
+        if (this.articles.isEmpty()) {
+            Toast.makeText(this, String.format(Locale.getDefault(), "No articles found for %s",
+                    selectedSource.getName()), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        viewPager.setBackground(null);
+        viewPager.setCurrentItem(0);
+
         setTitle(selectedSource.getName());
     }
 
@@ -149,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         fullCountries = countries;
 
         if (fullCountries == null) {
-            // Show error
+            // TODO Show error
         }
     }
 
@@ -157,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
         fullLanguages = languages;
 
         if (fullLanguages == null) {
-            // Show error
+            // TODO Show error
         }
     }
 
@@ -173,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
         selectedSource = filteredSources.get(position);
         if (this.selectedSource != null) {
             new Thread(new ArticlesLoaderRunnable(selectedSource.getId(), this)).start();
+            drawerLayout.closeDrawer(drawerList);
         }
     }
 
@@ -186,14 +208,7 @@ public class MainActivity extends AppCompatActivity {
                 filteredSources.size()));
 
         if (filteredSources.size() == 0) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-            builder.setTitle("No sources available");
-            builder.setMessage(
-                    "No sources exist matching the specified Topic, Language and/or Country");
-
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            showNoSourcesDialog();
         }
 
         drawerAdapter = new ArrayAdapter<>(this, R.layout.drawer_list_item,
@@ -204,6 +219,17 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         }
+    }
+
+    private void showNoSourcesDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("No sources available");
+        builder.setMessage(
+                "No sources exist matching the specified Topic, Language and/or Country");
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void loadData() {
