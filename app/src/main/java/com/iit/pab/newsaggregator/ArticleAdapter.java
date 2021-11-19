@@ -1,5 +1,7 @@
 package com.iit.pab.newsaggregator;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,8 +38,6 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleViewHolder> {
     public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
         ArticleDTO article = articles.get(position);
 
-        article.setTitle(null);
-
         setTextField(holder.title, article.getTitle());
         setTextField(holder.author, article.getAuthor());
         setTextField(holder.description, article.getDescription());
@@ -54,6 +54,10 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleViewHolder> {
 
         Picasso.get().load(article.getUrlToImage()).placeholder(R.drawable.loading)
                 .error(R.drawable.brokenimage).into(holder.image);
+
+        holder.title.setOnClickListener(v -> onClick(article.getUrl()));
+        holder.image.setOnClickListener(v -> onClick(article.getUrl()));
+        holder.description.setOnClickListener(v -> onClick(article.getUrl()));
     }
 
     @Override
@@ -61,8 +65,14 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleViewHolder> {
         return articles.size();
     }
 
-    public void onClick() {
-        // TODO
+    public void onClick(String url) {
+        if (url != null) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
+            if (intent.resolveActivity(mainActivity.getPackageManager()) != null) {
+                mainActivity.startActivity(intent);
+            }
+        }
     }
 
     private void setTextField(TextView textView, String content) {
