@@ -1,14 +1,20 @@
 package com.iit.pab.newsaggregator;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.iit.pab.newsaggregator.dto.CountryDTO;
 import com.iit.pab.newsaggregator.dto.LanguageDTO;
@@ -29,6 +35,11 @@ import java.util.stream.Collectors;
 public class MainActivity extends AppCompatActivity {
 
     private Menu menu;
+    private DrawerLayout drawerLayout;
+    private ListView drawerList;
+    private ActionBarDrawerToggle drawerToggle;
+    private ArrayAdapter<String> drawerAdapter;
+
     private List<SourceDTO> sources = new ArrayList<>();
     private List<SourceDTO> filteredSources = new ArrayList<>();
     private List<LanguageDTO> languages = new ArrayList<>();
@@ -50,6 +61,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        drawerLayout = findViewById(R.id.drawer_layout);
+        drawerList = findViewById(R.id.left_drawer);
+        drawerList.setOnItemClickListener((parent, view, position, id) -> topicSelected(position));
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer,
+                R.string.close_drawer);
+
         loadData();
     }
 
@@ -60,7 +77,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggls
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // Drawer logic
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         if (item.hasSubMenu()) {
             return true;
         }
@@ -96,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 this.languages.stream().map(LanguageDTO::getName).collect(Collectors.toList()));
         createSubMenu(COUNTRIES_ID, getString(R.string.countries),
                 this.countries.stream().map(CountryDTO::getName).collect(Collectors.toList()));
+
         filterSources();
     }
 
@@ -119,6 +156,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void topicSelected(int position) {
+        SourceDTO source = filteredSources.get(position);
+        Toast.makeText(this, "Source " + source.getName() + " selected!", Toast.LENGTH_SHORT)
+                .show();
+    }
+
     private void filterSources() {
         filteredSources = sources.stream()
                 .filter(s -> selectedLanguage == null || s.getLanguage().equals(selectedLanguage))
@@ -137,6 +180,15 @@ public class MainActivity extends AppCompatActivity {
 
             AlertDialog dialog = builder.create();
             dialog.show();
+        }
+
+        drawerAdapter = new ArrayAdapter<>(this, R.layout.drawer_list_item,
+                filteredSources.stream().map(SourceDTO::getName).collect(Collectors.toList()));
+        drawerList.setAdapter(drawerAdapter);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
         }
     }
 

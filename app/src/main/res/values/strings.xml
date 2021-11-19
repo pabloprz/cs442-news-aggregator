@@ -5,4 +5,7 @@
     <string name="languages">Languages</string>
     <string name="countries">Countries</string>
     <string name="all">all</string>
+    <string name="sources_drawer">Sources drawer</string>
+    <string name="open_drawer">Open drawer</string>
+    <string name="close_drawer">Close drawer</string>
 </resources>
