@@ -1,6 +1,9 @@
 package com.iit.pab.newsaggregator.dto;
 
-public class CountryDTO implements Comparable<CountryDTO> {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class CountryDTO implements Comparable<CountryDTO>, Parcelable {
 
     String code;
     String name;
@@ -8,6 +11,11 @@ public class CountryDTO implements Comparable<CountryDTO> {
     public CountryDTO(String code, String name) {
         this.code = code;
         this.name = name;
+    }
+
+    protected CountryDTO(Parcel in) {
+        code = in.readString();
+        name = in.readString();
     }
 
     public String getCode() {
@@ -33,4 +41,28 @@ public class CountryDTO implements Comparable<CountryDTO> {
         }
         return 0;
     }
+
+    // Parcelable implementation to save instance state
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(code);
+        parcel.writeString(name);
+    }
+
+    public static final Creator<CountryDTO> CREATOR = new Creator<CountryDTO>() {
+        @Override
+        public CountryDTO createFromParcel(Parcel in) {
+            return new CountryDTO(in);
+        }
+
+        @Override
+        public CountryDTO[] newArray(int size) {
+            return new CountryDTO[size];
+        }
+    };
 }

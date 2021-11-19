@@ -16,7 +16,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -74,7 +73,7 @@ public class SourcesLoaderRunnable implements Runnable {
             try {
                 JSONObject jObjMain = new JSONObject(json);
                 JSONArray sourceList = jObjMain.getJSONArray("sources");
-                List<SourceDTO> sources = new ArrayList<>();
+                ArrayList<SourceDTO> sources = new ArrayList<>();
                 Set<String> languages = new HashSet<>();
                 Set<String> categories = new HashSet<>();
                 Set<String> countries = new HashSet<>();

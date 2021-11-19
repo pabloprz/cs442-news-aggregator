@@ -9,4 +9,9 @@
     <string name="open_drawer">Open drawer</string>
     <string name="close_drawer">Close drawer</string>
     <string name="article_image">Article image</string>
+    <string name="selected_category">selectedCategory</string>
+    <string name="selected_language">selectedLanguage</string>
+    <string name="selected_country">selectedCountry</string>
+    <string name="categories">Categories</string>
+    <string name="sources">Sources</string>
 </resources>

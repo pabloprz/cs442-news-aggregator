@@ -46,14 +46,14 @@ public class MainActivity extends AppCompatActivity {
     private ArticleAdapter articleAdapter;
     private ViewPager2 viewPager;
 
-    private List<SourceDTO> sources = new ArrayList<>();
+    private ArrayList<SourceDTO> sources = new ArrayList<>();
     private List<SourceDTO> filteredSources = new ArrayList<>();
-    private List<LanguageDTO> languages = new ArrayList<>();
-    private List<String> categories = new ArrayList<>();
-    private List<CountryDTO> countries = new ArrayList<>();
+    private ArrayList<LanguageDTO> languages = new ArrayList<>();
+    private ArrayList<String> categories = new ArrayList<>();
+    private ArrayList<CountryDTO> countries = new ArrayList<>();
     private Map<String, String> fullCountries = new HashMap<>();
     private Map<String, String> fullLanguages = new HashMap<>();
-    private List<ArticleDTO> articles = new ArrayList<>();
+    private ArrayList<ArticleDTO> articles = new ArrayList<>();
 
     private String selectedLanguage;
     private String selectedCategory;
@@ -128,16 +128,17 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void updatingSourcesSuccess(List<SourceDTO> sources, Set<String> languages,
+    public void updatingSourcesSuccess(ArrayList<SourceDTO> sources, Set<String> languages,
                                        Set<String> categories, Set<String> countries) {
         this.sources = sources;
-        this.categories = categories.stream().sorted().collect(Collectors.toList());
+        this.categories =
+                categories.stream().sorted().collect(Collectors.toCollection(ArrayList::new));
         this.languages =
                 languages.stream().map(l -> new LanguageDTO(l, fullLanguages.get(l.toUpperCase())))
-                        .sorted().collect(Collectors.toList());
+                        .sorted().collect(Collectors.toCollection(ArrayList::new));
         this.countries =
                 countries.stream().map(c -> new CountryDTO(c, fullCountries.get(c.toUpperCase())))
-                        .sorted().collect(Collectors.toList());
+                        .sorted().collect(Collectors.toCollection(ArrayList::new));
 
         createSubMenu(CATEGORIES_ID, getString(R.string.topics), this.categories);
         createSubMenu(LANGUAGES_ID, getString(R.string.languages),
@@ -188,6 +189,49 @@ public class MainActivity extends AppCompatActivity {
 
     public void fetchingArticlesFailed() {
         // TODO do something
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString(getString(R.string.selected_category), selectedCategory);
+        outState.putString(getString(R.string.selected_language), selectedLanguage);
+        outState.putString(getString(R.string.selected_country), selectedCountry);
+
+        outState.putStringArrayList(getString(R.string.categories), categories);
+        outState.putParcelableArrayList(getString(R.string.languages), languages);
+        outState.putParcelableArrayList(getString(R.string.countries), countries);
+        outState.putParcelableArrayList(getString(R.string.sources), sources);
+
+        outState.putParcelableArrayList("articles", articles);
+        outState.putInt("currentArticle", viewPager.getCurrentItem());
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        selectedCategory = savedInstanceState.getString(getString(R.string.selected_category));
+        selectedLanguage = savedInstanceState.getString(getString(R.string.selected_language));
+        selectedCountry = savedInstanceState.getString(getString(R.string.selected_country));
+
+        categories = savedInstanceState.getStringArrayList(getString(R.string.categories));
+        languages = savedInstanceState.getParcelableArrayList(getString(R.string.languages));
+        countries = savedInstanceState.getParcelableArrayList(getString(R.string.countries));
+        sources = savedInstanceState.getParcelableArrayList(getString(R.string.sources));
+
+        articles.addAll(savedInstanceState.getParcelableArrayList("articles"));
+        articleAdapter.notifyDataSetChanged();
+
+        viewPager.setBackground(null);
+        viewPager.setCurrentItem(savedInstanceState.getInt("currentArticle"));
+
+        // TODO
+//        setTitle(selectedSource.getName());
+
+        filterSources();
     }
 
     private void topicSelected(int position) {

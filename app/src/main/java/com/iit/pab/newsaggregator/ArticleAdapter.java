@@ -52,8 +52,12 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleViewHolder> {
             holder.date.setVisibility(View.INVISIBLE);
         }
 
-        Picasso.get().load(article.getUrlToImage()).placeholder(R.drawable.loading)
-                .error(R.drawable.brokenimage).into(holder.image);
+        if (article.getUrlToImage() != null) {
+            Picasso.get().load(article.getUrlToImage()).placeholder(R.drawable.loading)
+                    .error(R.drawable.brokenimage).into(holder.image);
+        } else {
+            holder.image.setImageResource(R.drawable.noimage);
+        }
 
         holder.title.setOnClickListener(v -> onClick(article.getUrl()));
         holder.image.setOnClickListener(v -> onClick(article.getUrl()));
