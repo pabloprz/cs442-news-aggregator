@@ -44,14 +44,14 @@
 
     <ImageView
         android:id="@+id/articleImage"
-        android:layout_width="0dp"
-        android:layout_height="300dp"
+        android:layout_width="fill_parent"
+        android:layout_height="250dp"
         android:layout_marginStart="6dp"
         android:layout_marginTop="6dp"
         android:layout_marginEnd="6dp"
         android:contentDescription="@string/article_image"
         android:maxHeight="20dp"
-        android:scaleType="fitCenter"
+        android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/articleAuthor"
@@ -60,7 +60,7 @@
     <TextView
         android:id="@+id/articleDescription"
         android:layout_width="match_parent"
-        android:layout_height="230dp"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.iit.pab.newsaggregator.dto.ArticleDTO;
 import com.iit.pab.newsaggregator.utils.DateTimeUtils;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 import java.util.Locale;
@@ -35,6 +36,8 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleViewHolder> {
     public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
         ArticleDTO article = articles.get(position);
 
+        article.setTitle(null);
+
         setTextField(holder.title, article.getTitle());
         setTextField(holder.author, article.getAuthor());
         setTextField(holder.description, article.getDescription());
@@ -48,7 +51,9 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleViewHolder> {
         } else {
             holder.date.setVisibility(View.INVISIBLE);
         }
-        // TODO image
+
+        Picasso.get().load(article.getUrlToImage()).placeholder(R.drawable.loading)
+                .error(R.drawable.brokenimage).into(holder.image);
     }
 
     @Override
