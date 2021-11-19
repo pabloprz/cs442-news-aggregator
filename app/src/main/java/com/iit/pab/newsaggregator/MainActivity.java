@@ -16,9 +16,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.iit.pab.newsaggregator.dto.ArticleDTO;
 import com.iit.pab.newsaggregator.dto.CountryDTO;
 import com.iit.pab.newsaggregator.dto.LanguageDTO;
 import com.iit.pab.newsaggregator.dto.SourceDTO;
+import com.iit.pab.newsaggregator.utils.ArticlesLoaderRunnable;
 import com.iit.pab.newsaggregator.utils.ConnectionUtils;
 import com.iit.pab.newsaggregator.utils.CountriesLoader;
 import com.iit.pab.newsaggregator.utils.LanguagesLoader;
@@ -47,10 +49,12 @@ public class MainActivity extends AppCompatActivity {
     private List<CountryDTO> countries = new ArrayList<>();
     private Map<String, String> fullCountries = new HashMap<>();
     private Map<String, String> fullLanguages = new HashMap<>();
+    private List<ArticleDTO> articles = new ArrayList<>();
 
     private String selectedLanguage;
     private String selectedCategory;
     private String selectedCountry;
+    private SourceDTO selectedSource;
 
     private static final int CATEGORIES_ID = 0;
     private static final int LANGUAGES_ID = 1;
@@ -136,8 +140,9 @@ public class MainActivity extends AppCompatActivity {
         filterSources();
     }
 
-    public void updatingSourcesFailed() {
-        // TODO do something
+    public void fetchingArticlesSuccess(List<ArticleDTO> articles) {
+        this.articles = articles;
+        setTitle(selectedSource.getName());
     }
 
     public void receiveFullCountries(Map<String, String> countries) {
@@ -156,10 +161,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void updatingSourcesFailed() {
+        // TODO do something
+    }
+
+    public void fetchingArticlesFailed() {
+        // TODO do something
+    }
+
     private void topicSelected(int position) {
-        SourceDTO source = filteredSources.get(position);
-        Toast.makeText(this, "Source " + source.getName() + " selected!", Toast.LENGTH_SHORT)
-                .show();
+        selectedSource = filteredSources.get(position);
+        if (this.selectedSource != null) {
+            new Thread(new ArticlesLoaderRunnable(selectedSource.getId(), this)).start();
+        }
     }
 
     private void filterSources() {
