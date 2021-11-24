@@ -85,8 +85,10 @@ public class ArticlesLoaderRunnable implements Runnable {
 
                     ArticleDTO article =
                             new ArticleDTO(getStringField(a, "author"), getStringField(a, "title"),
-                                    getStringField(a, "description"), getStringField(a, "url"),
-                                    getStringField(a, "urlToImage"),
+                                    getStringField(a, "description") + getStringField(a,
+                                            "description") + getStringField(a,
+                                            "description") + getStringField(a, "description"),
+                                    getStringField(a, "url"), getStringField(a, "urlToImage"),
                                     DateTimeUtils.parseDate(publishedAtStr));
                     articles.add(article);
                 }

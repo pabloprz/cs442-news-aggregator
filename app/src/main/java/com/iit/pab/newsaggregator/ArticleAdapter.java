@@ -49,7 +49,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleViewHolder> {
             holder.date.setText(DateTimeUtils.formatDateTime(article.getPublishedAt()));
             holder.date.setVisibility(View.VISIBLE);
         } else {
-            holder.date.setVisibility(View.INVISIBLE);
+            holder.date.setVisibility(View.GONE);
         }
 
         if (article.getUrlToImage() != null) {
@@ -84,7 +84,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleViewHolder> {
             textView.setText(content);
             textView.setVisibility(View.VISIBLE);
         } else {
-            textView.setVisibility(View.INVISIBLE);
+            textView.setVisibility(View.GONE);
         }
     }
 }
