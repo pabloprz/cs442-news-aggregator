@@ -202,8 +202,9 @@ public class MainActivity extends AppCompatActivity {
         outState.putParcelableArrayList(getString(R.string.countries), countries);
         outState.putParcelableArrayList(getString(R.string.sources), sources);
 
-        outState.putParcelableArrayList("articles", articles);
-        outState.putInt("currentArticle", viewPager.getCurrentItem());
+        outState.putParcelable(getString(R.string.selected_source), selectedSource);
+        outState.putParcelableArrayList(getString(R.string.articles), articles);
+        outState.putInt(getString(R.string.current_article), viewPager.getCurrentItem());
 
         super.onSaveInstanceState(outState);
     }
@@ -222,16 +223,20 @@ public class MainActivity extends AppCompatActivity {
         countries = savedInstanceState.getParcelableArrayList(getString(R.string.countries));
         sources = savedInstanceState.getParcelableArrayList(getString(R.string.sources));
 
-        articles.addAll(savedInstanceState.getParcelableArrayList("articles"));
+        articles.addAll(savedInstanceState.getParcelableArrayList(getString(R.string.articles)));
         articleAdapter.notifyDataSetChanged();
 
         viewPager.setBackground(null);
-        viewPager.setCurrentItem(savedInstanceState.getInt("currentArticle"));
+        viewPager.setCurrentItem(savedInstanceState.getInt(getString(R.string.current_article)));
 
-        // TODO
-//        setTitle(selectedSource.getName());
+        selectedSource = savedInstanceState.getParcelable(getString(R.string.selected_source));
 
         filterSources();
+
+        if (selectedSource != null) {
+            setTitle(selectedSource.getName());
+        }
+
     }
 
     private void topicSelected(int position) {
@@ -248,8 +253,12 @@ public class MainActivity extends AppCompatActivity {
                 .filter(s -> selectedCategory == null || s.getCategory().equals(selectedCategory))
                 .filter(s -> selectedCountry == null || s.getCountry().equals(selectedCountry))
                 .collect(Collectors.toList());
-        setTitle(String.format(Locale.getDefault(), "%s (%d)", getString(R.string.app_name),
-                filteredSources.size()));
+
+        if (selectedSource == null) {
+            // Default title is only shown if no source has been selected
+            setTitle(String.format(Locale.getDefault(), "%s (%d)", getString(R.string.app_name),
+                    filteredSources.size()));
+        }
 
         if (filteredSources.size() == 0) {
             showNoSourcesDialog();

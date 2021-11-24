@@ -14,4 +14,7 @@
     <string name="selected_country">selectedCountry</string>
     <string name="categories">Categories</string>
     <string name="sources">Sources</string>
+    <string name="articles">articles</string>
+    <string name="current_article">currentArticle</string>
+    <string name="selected_source">selectedSource</string>
 </resources>
