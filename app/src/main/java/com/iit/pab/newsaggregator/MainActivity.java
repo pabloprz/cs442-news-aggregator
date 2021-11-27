@@ -2,7 +2,10 @@ package com.iit.pab.newsaggregator;
 
 import android.annotation.SuppressLint;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -23,6 +26,7 @@ import com.iit.pab.newsaggregator.dto.CountryDTO;
 import com.iit.pab.newsaggregator.dto.LanguageDTO;
 import com.iit.pab.newsaggregator.dto.SourceDTO;
 import com.iit.pab.newsaggregator.utils.ArticlesLoaderRunnable;
+import com.iit.pab.newsaggregator.utils.ColorsLoader;
 import com.iit.pab.newsaggregator.utils.ConnectionUtils;
 import com.iit.pab.newsaggregator.utils.CountriesLoader;
 import com.iit.pab.newsaggregator.utils.LanguagesLoader;
@@ -54,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private Map<String, String> fullCountries = new HashMap<>();
     private Map<String, String> fullLanguages = new HashMap<>();
     private ArrayList<ArticleDTO> articles = new ArrayList<>();
+    private List<String> colors = new ArrayList<>();
+    private Map<String, String> colorCategories = new HashMap<>();
 
     private String selectedLanguage;
     private String selectedCategory;
@@ -133,6 +139,19 @@ public class MainActivity extends AppCompatActivity {
         this.sources = sources;
         this.categories =
                 categories.stream().sorted().collect(Collectors.toCollection(ArrayList::new));
+
+        for (int i = 0; i < this.categories.size(); i++) {
+            String color;
+            if ((colors.size()) > i) {
+                // If we have a color
+                color = colors.get(i);
+            } else {
+                color = "#000000";
+            }
+
+            colorCategories.put(this.categories.get(i), color);
+        }
+
         this.languages =
                 languages.stream().map(l -> new LanguageDTO(l, fullLanguages.get(l.toUpperCase())))
                         .sorted().collect(Collectors.toCollection(ArrayList::new));
@@ -140,11 +159,13 @@ public class MainActivity extends AppCompatActivity {
                 countries.stream().map(c -> new CountryDTO(c, fullCountries.get(c.toUpperCase())))
                         .sorted().collect(Collectors.toCollection(ArrayList::new));
 
-        createSubMenu(CATEGORIES_ID, getString(R.string.topics), this.categories);
+        createSubMenu(CATEGORIES_ID, getString(R.string.topics), this.categories, true);
         createSubMenu(LANGUAGES_ID, getString(R.string.languages),
-                this.languages.stream().map(LanguageDTO::getName).collect(Collectors.toList()));
+                this.languages.stream().map(LanguageDTO::getName).collect(Collectors.toList()),
+                false);
         createSubMenu(COUNTRIES_ID, getString(R.string.countries),
-                this.countries.stream().map(CountryDTO::getName).collect(Collectors.toList()));
+                this.countries.stream().map(CountryDTO::getName).collect(Collectors.toList()),
+                false);
 
         filterSources();
     }
@@ -181,6 +202,10 @@ public class MainActivity extends AppCompatActivity {
         if (fullLanguages == null) {
             // TODO Show error
         }
+    }
+
+    public void receiveColors(List<String> colors) {
+        this.colors = colors;
     }
 
     public void updatingSourcesFailed() {
@@ -224,10 +249,13 @@ public class MainActivity extends AppCompatActivity {
         sources = savedInstanceState.getParcelableArrayList(getString(R.string.sources));
 
         articles.addAll(savedInstanceState.getParcelableArrayList(getString(R.string.articles)));
-        articleAdapter.notifyDataSetChanged();
 
-        viewPager.setBackground(null);
-        viewPager.setCurrentItem(savedInstanceState.getInt(getString(R.string.current_article)));
+        if (!articles.isEmpty()) {
+            articleAdapter.notifyDataSetChanged();
+            viewPager.setBackground(null);
+            viewPager
+                    .setCurrentItem(savedInstanceState.getInt(getString(R.string.current_article)));
+        }
 
         selectedSource = savedInstanceState.getParcelable(getString(R.string.selected_source));
 
@@ -288,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
     private void loadData() {
         new Thread(new LanguagesLoader(this)).start();
         new Thread(new CountriesLoader(this)).start();
+        new Thread(new ColorsLoader(this)).start();
 
         if (ConnectionUtils.hasNetworkConnection(this)) {
             new Thread(new SourcesLoaderRunnable(this)).start();
@@ -296,11 +325,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void createSubMenu(int groupId, String groupName, List<String> values) {
+    private void createSubMenu(int groupId, String groupName, List<String> values,
+                               boolean colorable) {
         SubMenu subMenu = menu.addSubMenu(groupName);
         subMenu.add(groupId, 0, 0, getString(R.string.all));
         for (int i = 1; i <= values.size(); i++) {
-            subMenu.add(groupId, i, i, values.get(i - 1));
+            MenuItem item = subMenu.add(groupId, i, i, values.get(i - 1));
+            if (colorable) {
+                SpannableString s = new SpannableString(values.get(i - 1));
+                s.setSpan(new ForegroundColorSpan(
+                                Color.parseColor(colorCategories.get(values.get(i - 1)))), 0,
+                        s.length(),
+                        0);
+                item.setTitle(s);
+            }
         }
     }
 }
