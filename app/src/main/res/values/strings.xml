@@ -17,4 +17,5 @@
     <string name="articles">articles</string>
     <string name="current_article">currentArticle</string>
     <string name="selected_source">selectedSource</string>
+    <string name="colors">colors</string>
 </resources>

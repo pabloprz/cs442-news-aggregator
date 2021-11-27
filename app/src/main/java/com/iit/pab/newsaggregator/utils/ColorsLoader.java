@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ColorsLoader implements Runnable {
 
@@ -33,7 +32,7 @@ public class ColorsLoader implements Runnable {
                 result.append(line);
             }
 
-            List<String> colors = new ArrayList<>();
+            ArrayList<String> colors = new ArrayList<>();
             JSONArray jsonArray = new JSONArray(result.toString());
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);

@@ -9,7 +9,6 @@ import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -46,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ListView drawerList;
     private ActionBarDrawerToggle drawerToggle;
-    private ArrayAdapter<String> drawerAdapter;
     private ArticleAdapter articleAdapter;
     private ViewPager2 viewPager;
 
@@ -58,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private Map<String, String> fullCountries = new HashMap<>();
     private Map<String, String> fullLanguages = new HashMap<>();
     private ArrayList<ArticleDTO> articles = new ArrayList<>();
-    private List<String> colors = new ArrayList<>();
-    private Map<String, String> colorCategories = new HashMap<>();
+    private ArrayList<String> colors = new ArrayList<>();
+    protected Map<String, String> colorCategories = new HashMap<>();
 
     private String selectedLanguage;
     private String selectedCategory;
@@ -140,17 +138,7 @@ public class MainActivity extends AppCompatActivity {
         this.categories =
                 categories.stream().sorted().collect(Collectors.toCollection(ArrayList::new));
 
-        for (int i = 0; i < this.categories.size(); i++) {
-            String color;
-            if ((colors.size()) > i) {
-                // If we have a color
-                color = colors.get(i);
-            } else {
-                color = "#000000";
-            }
-
-            colorCategories.put(this.categories.get(i), color);
-        }
+        mapCategoriesAndColors();
 
         this.languages =
                 languages.stream().map(l -> new LanguageDTO(l, fullLanguages.get(l.toUpperCase())))
@@ -204,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void receiveColors(List<String> colors) {
+    public void receiveColors(ArrayList<String> colors) {
         this.colors = colors;
     }
 
@@ -231,6 +219,8 @@ public class MainActivity extends AppCompatActivity {
         outState.putParcelableArrayList(getString(R.string.articles), articles);
         outState.putInt(getString(R.string.current_article), viewPager.getCurrentItem());
 
+        outState.putStringArrayList(getString(R.string.colors), colors);
+
         super.onSaveInstanceState(outState);
     }
 
@@ -247,6 +237,9 @@ public class MainActivity extends AppCompatActivity {
         languages = savedInstanceState.getParcelableArrayList(getString(R.string.languages));
         countries = savedInstanceState.getParcelableArrayList(getString(R.string.countries));
         sources = savedInstanceState.getParcelableArrayList(getString(R.string.sources));
+
+        colors = savedInstanceState.getStringArrayList(getString(R.string.colors));
+        mapCategoriesAndColors();
 
         articles.addAll(savedInstanceState.getParcelableArrayList(getString(R.string.articles)));
 
@@ -292,9 +285,8 @@ public class MainActivity extends AppCompatActivity {
             showNoSourcesDialog();
         }
 
-        drawerAdapter = new ArrayAdapter<>(this, R.layout.drawer_list_item,
-                filteredSources.stream().map(SourceDTO::getName).collect(Collectors.toList()));
-        drawerList.setAdapter(drawerAdapter);
+        drawerList.setAdapter(new SourceItemAdapter(this, R.layout.drawer_list_item,
+                filteredSources.toArray(new SourceDTO[0])));
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -339,6 +331,19 @@ public class MainActivity extends AppCompatActivity {
                         0);
                 item.setTitle(s);
             }
+        }
+    }
+
+    private void mapCategoriesAndColors() {
+        for (int i = 0; i < this.categories.size(); i++) {
+            String color;
+            if (colors != null && (colors.size()) > i) {
+                color = colors.get(i);
+            } else {
+                color = "#000000";  // Default color is black
+            }
+
+            colorCategories.put(this.categories.get(i), color);
         }
     }
 }
