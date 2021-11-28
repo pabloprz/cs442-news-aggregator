@@ -42,8 +42,9 @@ public class SourceItemAdapter extends ArrayAdapter<SourceDTO> {
 
         SourceDTO source = objects[position];
         vh.name.setText(source.getName());
-        vh.name.setTextColor(
-                Color.parseColor(mainActivity.colorCategories.get(source.getCategory())));
+        // Color is set; if no color, default is white
+        vh.name.setTextColor(Color.parseColor(
+                mainActivity.colorCategories.getOrDefault(source.getCategory(), "#FFFFFF")));
 
         return convertView;
     }

@@ -18,4 +18,9 @@
     <string name="current_article">currentArticle</string>
     <string name="selected_source">selectedSource</string>
     <string name="colors">colors</string>
+    <string name="no_articles">No articles found for %s</string>
+    <string name="error_countries">Error fetching countries</string>
+    <string name="error_languages">Error fetching languages</string>
+    <string name="error_sources">Sources could not be fetched</string>
+    <string name="error_articles">Articles could not be fetched</string>
 </resources>

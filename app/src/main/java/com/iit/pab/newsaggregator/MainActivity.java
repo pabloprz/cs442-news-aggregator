@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         articleAdapter.notifyDataSetChanged();
 
         if (this.articles.isEmpty()) {
-            Toast.makeText(this, String.format(Locale.getDefault(), "No articles found for %s",
+            Toast.makeText(this, String.format(Locale.getDefault(), getString(R.string.no_articles),
                     selectedSource.getName()), Toast.LENGTH_SHORT).show();
             return;
         }
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         fullCountries = countries;
 
         if (fullCountries == null) {
-            // TODO Show error
+            Toast.makeText(this, getString(R.string.error_countries), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
         fullLanguages = languages;
 
         if (fullLanguages == null) {
-            // TODO Show error
+            Toast.makeText(this, getString(R.string.error_languages), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -197,11 +197,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updatingSourcesFailed() {
-        // TODO do something
+        Toast.makeText(this, getString(R.string.error_sources), Toast.LENGTH_SHORT).show();
     }
 
     public void fetchingArticlesFailed() {
-        // TODO do something
+        Toast.makeText(this, getString(R.string.error_articles), Toast.LENGTH_SHORT).show();
     }
 
     @Override
